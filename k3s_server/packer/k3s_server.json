@@ -1,0 +1,28 @@
+{
+    "variables": {
+        "vsphere-server": "",
+        "vsphere-user": "administrator@vsphere.local",
+        "vsphere-password": "",
+        
+        "vsphere-datacenter": "datacenter",
+        "vsphere-cluster": "Cluster", 
+        "vsphere-network": "VM Network",
+        "vsphere-datastore": "Datastore3",
+
+        "vm-name": "Centos 8 Template",
+        "vm-cpu-num": "1",
+        "vm-mem": "2048",
+        "vm-disk-size": "25600",
+
+        "iso_url": "[Datastore3] ISO/CentOS-8.3.2011-x86_64-dvd1.iso"
+    },
+
+    "builders": [
+        {
+            "type": "vmware-iso",
+
+            "user": "{{user vsphere-user}}",
+            "password": "{{user vsphere-password}}"
+        }
+    ]
+}
