@@ -1,6 +1,6 @@
 {
     "variables": {
-        "vsphere-server": "",
+        "vsphere-server": "10.0.0.40",
         "vsphere-user": "administrator@vsphere.local",
         "vsphere-password": "",
         
@@ -13,16 +13,43 @@
         "vm-cpu-num": "1",
         "vm-mem": "2048",
         "vm-disk-size": "25600",
+        "vsphere-host": "https://10.0.39"
 
-        "iso_url": "[Datastore3] ISO/CentOS-8.3.2011-x86_64-dvd1.iso"
+        
     },
 
     "builders": [
         {
-            "type": "vmware-iso",
+            "type": "vsphere-iso",
+            
 
-            "user": "{{user vsphere-user}}",
-            "password": "{{user vsphere-password}}"
+            "vcenter_url": "{{user `vsphere-server`}}",
+            "user": "{{user `vsphere-user`}}",
+            "password": "{{user `vsphere-password`}}",
+            "insecure_connection": "true",
+            "datacenter": "{{user `vsphere-datacenter }}",
+
+            "CPUs": "{{user `vm-cpu-num }}",
+            "RAM": "{{user `vm-name`}}",
+            "cluster": "{{user `vsphere-cluster`}}",
+            "host": "{{user `vsphere-host`}}",
+            "datastore": "{{user `vsphere-datastore'}}",
+            "network": "{{user `vsphere-network`}}",
+            "network_card": "vmxnet3",
+
+            "guest_os_type": "centos8_64Guest",
+
+            "boot_wait": "10",
+
+            "ssh_username": "root",
+            "ssh_password": "demo1234",
+            
+            "iso_url": "[Datastore3] ISO/CentOS-8.3.2011-x86_64-dvd1.iso",
+            "http_directory": "ks",
+            "boot_command": [
+                "<tab><wait>",
+                " ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/anaconda-ks.cfg<enter>"
+             ]
         }
     ]
 }
