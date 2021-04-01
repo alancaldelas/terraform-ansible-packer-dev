@@ -1,19 +1,19 @@
 {
     "variables": {
-        "vsphere-server": "10.0.0.40",
+        "vsphere-server": "",
         "vsphere-user": "administrator@vsphere.local",
         "vsphere-password": "",
         
-        "vsphere-datacenter": "datacenter",
+        "vsphere-datacenter": "Datacenter",
         "vsphere-cluster": "Cluster", 
         "vsphere-network": "VM Network",
-        "vsphere-datastore": "Datastore3",
+        "vsphere-datastore": "datastore3",
 
-        "vm-name": "Centos 8 Template",
-        "vm-cpu-num": "1",
-        "vm-mem": "2048",
+        "vm-name": "Centos 8 Template ",
+        "vm-cpu-num": "8",
+        "vm-mem": "16000",
         "vm-disk-size": "25600",
-        "vsphere-host": "https://10.0.39"
+        "vsphere-host": ""
 
         
     },
@@ -23,32 +23,48 @@
             "type": "vsphere-iso",
             
 
-            "vcenter_url": "{{user `vsphere-server`}}",
-            "user": "{{user `vsphere-user`}}",
+            "vcenter_server": "{{user `vsphere-server`}}",
+            "username": "{{user `vsphere-user`}}",
             "password": "{{user `vsphere-password`}}",
             "insecure_connection": "true",
-            "datacenter": "{{user `vsphere-datacenter }}",
+            "datacenter": "{{user `vsphere-datacenter`}}",
 
-            "CPUs": "{{user `vm-cpu-num }}",
-            "RAM": "{{user `vm-name`}}",
+            "vm_name": "{{user `vm-name`}}",
+
+            "CPUs": "{{user `vm-cpu-num`}}",
+            "RAM": "{{user `vm-mem`}}",
+            "disk_controller_type": "pvscsi",
+            "storage": [
+                {
+                    "disk_size": "{{user `vm-disk-size`}}",
+                    "disk_thin_provisioned": true
+                }
+            ],
+           
             "cluster": "{{user `vsphere-cluster`}}",
             "host": "{{user `vsphere-host`}}",
-            "datastore": "{{user `vsphere-datastore'}}",
-            "network": "{{user `vsphere-network`}}",
-            "network_card": "vmxnet3",
-
+            "datastore": "{{user `vsphere-datastore`}}",
+            "network_adapters":[
+                {
+                "network": "{{user `vsphere-network`}}",
+                "network_card": "vmxnet3"
+                }
+            ],  
             "guest_os_type": "centos8_64Guest",
 
-            "boot_wait": "10",
+            "boot_wait": "10s",
 
-            "ssh_username": "root",
-            "ssh_password": "demo1234",
+            "ssh_username": "alan",
+            "ssh_password": "alan",
             
-            "iso_url": "[Datastore3] ISO/CentOS-8.3.2011-x86_64-dvd1.iso",
+            "iso_checksum": "aaf9d4b3071c16dbbda01dfe06085e5d0fdac76df323e3bbe87cce4318052247",
+            "iso_paths": [
+                "[datastore3] ISO/CentOS-8.3.2011-x86_64-dvd1.iso"
+            ],
             "http_directory": "ks",
             "boot_command": [
-                "<tab><wait>",
-                " ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/anaconda-ks.cfg<enter>"
+                "<tab><bs><bs><bs><bs><bs>",
+                " ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/anaconda-ks.cfg<enter><wait>"
              ]
         }
     ]
