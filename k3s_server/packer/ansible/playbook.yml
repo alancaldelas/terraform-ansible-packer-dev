@@ -1,0 +1,24 @@
+---
+# playbook.yml
+- name: 'K3s Server Image'
+  hosts: default
+  become: true
+
+  tasks:
+    - name: Add repository
+      yum_repository:
+      name: epel
+      description: EPEL YUM repo
+      baseurl: https://download.fedoraproject.org/pub/epel/$releasever/$basearch/
+    
+    - name: update
+      shell: yum -y update
+    
+    - name: install xrdp
+      yum:
+        name: xrdp
+    
+    - name: install Apache
+      package:
+        name: 'httpd'
+        state: present

@@ -1,19 +1,19 @@
 {
     "variables": {
-        "vsphere-server": "",
+        "vsphere-server": "10.0.0.82",
         "vsphere-user": "administrator@vsphere.local",
         "vsphere-password": "",
         
         "vsphere-datacenter": "Datacenter",
-        "vsphere-cluster": "Cluster", 
-        "vsphere-network": "VM Network",
-        "vsphere-datastore": "datastore3",
+        "vsphere-cluster": "New Cluster", 
+        "vsphere-network": "DSwitch-VM Network",
+        "vsphere-datastore": "vsanDatastore",
 
-        "vm-name": "Centos 8 Template ",
-        "vm-cpu-num": "8",
-        "vm-mem": "16000",
+        "vm-name": "Centos 8 K3s Server",
+        "vm-cpu-num": "4",
+        "vm-mem": "8000",
         "vm-disk-size": "25600",
-        "vsphere-host": ""
+        "vsphere-host": "10.0.0.76"
 
         
     },
@@ -28,6 +28,7 @@
             "password": "{{user `vsphere-password`}}",
             "insecure_connection": "true",
             "datacenter": "{{user `vsphere-datacenter`}}",
+            "convert_to_template": "true",
 
             "vm_name": "{{user `vm-name`}}",
 
@@ -59,7 +60,7 @@
             
             "iso_checksum": "aaf9d4b3071c16dbbda01dfe06085e5d0fdac76df323e3bbe87cce4318052247",
             "iso_paths": [
-                "[datastore3] ISO/CentOS-8.3.2011-x86_64-dvd1.iso"
+                "[vsanDatastore] ISO/CentOS-8.3.2011-x86_64-dvd1.iso"
             ],
             "http_directory": "ks",
             "boot_command": [
@@ -67,5 +68,11 @@
                 " ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/anaconda-ks.cfg<enter><wait>"
              ]
         }
-    ]
+    ],
+    "provisioners": [
+        {
+          "type": "ansible",
+          "playbook_file": "./ansible/playbook.yml"
+        }
+      ]
 }
