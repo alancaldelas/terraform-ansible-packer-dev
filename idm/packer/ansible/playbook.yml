@@ -19,7 +19,10 @@
         - git
         - xrdp
 
-  tasks: 
+  tasks:
+    - name: Enable idm
+      shell: yum module enable -y idm:DL1
+
     - name: Enable xrdp
       service:
         name: xrdp
@@ -50,29 +53,31 @@
           - terraform
           - packer
           - ansible
-          
-    - name: Open ports for k3s
+          - ipa-server
+          - ipa-server-dns
+
+    - name: add to etc hosts file
+      lineinfile:
+        path: /etc/hosts
+        line: '{{ ansible_default_ipv4.address }}    ipa.alan-caldelas.com '
+
+    - name: Open ports for idm
       firewalld: 
         port: '{{ item }}'
         permanent: yes  
         state: enabled
       with_items:
-        - 6443/tcp
-        - 8472/tcp
-        - 10250/tcp
-        - 2379-2380/tcp
-        - 53/udp
-        - 8080/tcp
         - 80/tcp
+        - 443/tcp
+        - 389/tcp
+        - 636/tcp
+        - 88/tcp
+        - 53/tcp
+        - 464/udp
         - 8000/tcp
         - 3389/tcp
+        - 53/udp
+        - 123/udp
+    - name: install ipa-server
+      shell: ipa-server-install --realm ALAN-CALDELAS.COM --ds-password demo1234 --admin-password demo1234 --domain alan-caldelas.com --setup-dns --setup-adtrust --no-reverse --no-forwarders --unattended
 
-    - name: Download k3s
-      get_url:
-        url: '{{ item }}'
-        dest: /var/tmp/
-      with_items:
-        - https://github.com/k3s-io/k3s-selinux/releases/download/v0.3.stable.0/k3s-selinux-0.3-0.el8.noarch.rpm
-        - https://github.com/k3s-io/k3s/releases/download/v1.18.17%2Bk3s1/k3s-airgap-images-amd64.tar
-        - https://github.com/k3s-io/k3s/releases/download/v1.18.17%2Bk3s1/k3s
-    
