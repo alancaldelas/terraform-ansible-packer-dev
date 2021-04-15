@@ -9,7 +9,7 @@
         "vsphere-network": "DSwitch-VM Network",
         "vsphere-datastore": "vsanDatastore",
 
-        "vm-name": "Centos 8 K3s Server 1",
+        "vm-name": "Centos 8 IdM",
         "vm-cpu-num": "4",
         "vm-mem": "8000",
         "vm-disk-size": "25600",
