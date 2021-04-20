@@ -1,14 +1,17 @@
 ---
 # playbook.yml
-- name: 'K3s Server Image'
-  hosts: localhost
+- name: 'IdM Image'
+  hosts: default
   become: true
 
   pre_tasks:
     - name: enable repo
       shell: |
         dnf install -y epel-release
-        yum -y update
+        yum -y  --nobest update 
+      register: repo
+    - debug: msg="{{ repo.stdout }}"
+    - debug: msg="{{ repo.stderr }}"
     - name: update
       vars: 
         ansible_python_interpreter: /usr/bin/python2
@@ -27,6 +30,7 @@
       service:
         name: xrdp
         state: started
+        enabled: true
     - name: Add micro key
       shell: sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
     - name: Create entry for create
@@ -59,7 +63,10 @@
     - name: add to etc hosts file
       lineinfile:
         path: /etc/hosts
-        line: '{{ ansible_default_ipv4.address }}    ipa.alan-caldelas.com '
+        line: '{{ ansible_default_ipv4.address }}    idm.alan-caldelas.com '
+    - name: change hostname
+      hostname:
+        name: idm1.alan-caldelas.com
 
     - name: Open ports for idm
       firewalld: 
@@ -77,7 +84,6 @@
         - 8000/tcp
         - 3389/tcp
         - 53/udp
+        - 3389/tcp
         - 123/udp
-    - name: install ipa-server
-      shell: ipa-server-install --realm ALAN-CALDELAS.COM --ds-password demo1234 --admin-password demo1234 --domain alan-caldelas.com --setup-dns --setup-adtrust --no-reverse --no-forwarders --unattended
-
+        

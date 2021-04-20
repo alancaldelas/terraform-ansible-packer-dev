@@ -1,6 +1,6 @@
 {
     "variables": {
-        "vsphere-server": "10.208.1.57",
+        "vsphere-server": "10.208.1.156",
         "vsphere-user": "administrator@vsphere.local",
         "vsphere-password": "",
         
@@ -9,11 +9,11 @@
         "vsphere-network": "DSwitch-VM Network",
         "vsphere-datastore": "vsanDatastore",
 
-        "vm-name": "Centos 8 IdM",
+        "vm-name": "Centos 8 IdM-3",
         "vm-cpu-num": "4",
         "vm-mem": "8000",
         "vm-disk-size": "25600",
-        "vsphere-host": "10.208.1.229"
+        "vsphere-host": "10.208.1.214"
 
         
     },
@@ -28,7 +28,7 @@
             "password": "{{user `vsphere-password`}}",
             "insecure_connection": "true",
             "datacenter": "{{user `vsphere-datacenter`}}",
-            "convert_to_template": "true",
+            "convert_to_template": "false",
 
             "vm_name": "{{user `vm-name`}}",
 

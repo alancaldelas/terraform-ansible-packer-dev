@@ -1,0 +1,12 @@
+{
+    "variables": {
+        "vsphere-server": "10.208.1.229",
+        "vsphere-user": ""
+    },
+    "builders": [
+        {
+            "type": "vmware-iso",
+            "iso_url": ""
+        }
+    ]
+}

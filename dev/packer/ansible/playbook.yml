@@ -1,0 +1,61 @@
+---
+# playbook.yml
+- name: 'Dev Image'
+  hosts: default
+  become: true
+
+  pre_tasks:
+    - name: enable repo
+      shell: |
+        dnf install -y epel-release
+        yum -y update
+    - name: update
+      vars: 
+        ansible_python_interpreter: /usr/bin/python2
+      raw: yum install -y {{ item }}
+      with_items:
+        - python2
+        - python3
+        - git
+        - xrdp
+
+  tasks: 
+    - name: Enable xrdp
+      service:
+        name: xrdp
+        state: started
+        enabled: true
+    - name: Add micro key
+      shell: sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
+    - name: Create entry for create
+      copy:
+        dest: /etc/yum.repos.d/vscode.repo
+        content: |
+          [code]
+          name=Visual Studio Code
+          baseurl=https://packages.microsoft.com/yumrepos/vscode
+          enabled=1
+          gpgcheck=1
+          gpgkey=https://packages.microsoft.com/keys/microsoft.asc
+    - name: install code
+      yum:
+        name: code
+    - name: add utils for packer and terraform
+      yum:
+        name: yum-utils
+    - name: add repo
+      shell: sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
+    - name: install terraform and packer
+      yum:
+        name: 
+          - terraform
+          - packer
+          - ansible
+          
+    - name: Open ports for xrdp
+      firewalld: 
+        port: '{{ item }}'
+        permanent: yes  
+        state: enabled
+      with_items:
+        - 3389/tcp

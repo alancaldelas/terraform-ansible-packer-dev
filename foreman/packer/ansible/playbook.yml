@@ -1,0 +1,102 @@
+---
+# playbook.yml
+- name: 'Foreman Image'
+  hosts: default
+  become: true
+
+  pre_tasks:
+    - name: enable repo
+      shell: |
+        dnf install -y epel-release
+        yum -y  --nobest update 
+      register: repo
+    - debug: msg="{{ repo.stdout }}"
+    - debug: msg="{{ repo.stderr }}"
+    - name: update
+      vars: 
+        ansible_python_interpreter: /usr/bin/python2
+      raw: yum install -y {{ item }}
+      with_items:
+        - python2
+        - python3
+        - git
+        - xrdp
+
+  tasks:
+
+    - name: Enable xrdp
+      service:
+        name: xrdp
+        state: started
+        enabled: true
+    - name: Add micro key
+      shell: sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
+    - name: Create entry for create
+      copy:
+        dest: /etc/yum.repos.d/vscode.repo
+        content: |
+          [code]
+          name=Visual Studio Code
+          baseurl=https://packages.microsoft.com/yumrepos/vscode
+          enabled=1
+          gpgcheck=1
+          gpgkey=https://packages.microsoft.com/keys/microsoft.asc
+    - name: install code
+      yum:
+        name: code
+    - name: add utils for packer and terraform
+      yum:
+        name: yum-utils
+    - name: add repo
+      shell: sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
+    - name: install terraform and packer
+      yum:
+        name: 
+          - terraform
+          - packer
+          - ansible
+
+
+    - name: add to etc hosts file
+      lineinfile:
+        path: /etc/hosts
+        line: '{{ ansible_default_ipv4.address }}    foreman.alan-caldelas.com '
+    - name: change hostname
+      hostname:
+        name: foreman.alan-caldelas.com
+
+    - name: Open ports for idm
+      firewalld: 
+        port: '{{ item }}'
+        permanent: yes  
+        state: enabled
+      with_items:
+        - 67/udp
+        - 67/tcp
+        - 69/udp
+        - 68/udp
+        - 80/tcp
+        - 443/tcp
+        - 389/tcp
+        - 3000/tcp
+        - 3306/tcp
+        - 53/tcp
+        - 5910-5930/udp
+        - 5432/tcp
+        - 8140/tcp
+        - 8443/tcp
+        - 8000/tcp
+        - 3389/tcp
+        - 53/udp
+        - 3389/tcp
+    
+
+    - name: install puppet
+      yum:
+        name:  '{{ items }}'
+      with_items:
+        - https://yum.puppet.com/puppet6-release-el-8.noarch.rpm
+        - http://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+        - https://yum.theforeman.org/relases/latest/el8/x86_64/foreman-selinux-2.4-1.el8.noarch.rpm
+        - foreman-installer
+    
