@@ -1,0 +1,75 @@
+{
+    "variables": {
+        "vsphere-server": "10.208.1.21",
+        "vsphere-user": "administrator@vsphere.local",
+        "vsphere-password": "Demo1234!@#$",
+        
+        "vsphere-datacenter": "Datacenter",
+        "vsphere-cluster": "New Cluster", 
+        "vsphere-network": "DSwitch-VM Network",
+        "vsphere-datastore": "vsanDatastore",
+
+        "vm-name": "RHEL Linux 8.4",
+        "vm-cpu-num": "16",
+        "vm-mem": "32000",
+        "vm-disk-size": "256000",
+        "vsphere-host": "10.208.1.229"
+
+        
+    },
+
+    "builders": [
+        {
+            "type": "vsphere-iso",
+            
+            "vcenter_server": "{{user `vsphere-server`}}",
+            "username": "{{user `vsphere-user`}}",
+            "password": "{{user `vsphere-password`}}",
+            "insecure_connection": "true",
+            "datacenter": "{{user `vsphere-datacenter`}}",
+            "convert_to_template": "true",
+            "firmware": "efi-secure",
+
+
+
+            "vm_name": "{{user `vm-name`}}",
+
+            "CPUs": "{{user `vm-cpu-num`}}",
+            "RAM": "{{user `vm-mem`}}",
+            "disk_controller_type": "pvscsi",
+            "storage": [
+                {
+                    "disk_size": "{{user `vm-disk-size`}}",
+                    "disk_thin_provisioned": true
+                }
+            ],
+            
+            "cluster": "{{user `vsphere-cluster`}}",
+            "host": "{{user `vsphere-host`}}",
+            "datastore": "{{user `vsphere-datastore`}}",
+            "network_adapters":[
+                {
+                "network": "{{user `vsphere-network`}}",
+                "network_card": "vmxnet3"
+                }
+            ],  
+            "guest_os_type": "centos8_64Guest",
+
+            "boot_wait": "10s",
+
+            "ssh_username": "localadmin",
+            "ssh_password": "demo1234!@#$",
+            
+            "iso_checksum": "48f955712454c32718dcde858dea5aca574376a1d7a4b0ed6908ac0b85597811",
+            "iso_paths": [
+                "[vsanDatastore] ISO/rhel-8.4-x86_64-dvd.iso"
+            ],
+            "http_directory": "ks",
+            "boot_command": [
+                "<up>e<down><down><end><wait>", " text inst.ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/anaconda-ks.cfg", "<enter><wait><leftCtrlOn>x<leftCtrlOff>"
+                
+             ]
+        }
+ 
+    ]
+}

@@ -28,6 +28,8 @@
             "insecure_connection": "true",
             "datacenter": "{{user `vsphere-datacenter`}}",
             "convert_to_template": "true",
+            "firmware": "efi-secure",
+            "cdrom_type": "sata",
 
             "vm_name": "{{user `vm-name`}}",
 
